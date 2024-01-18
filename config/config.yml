@@ -1,0 +1,92 @@
+data:
+  path_excel_continuous: "Data/ProcessParamter_Data_Continuous.xlsx"
+  path_excel_discrete: "Data/ProcessParamter_Data_Discrete.xlsx"
+  parameter_name:
+    process_time: 'ProcessTime'
+    jobs_per_batch: 'Batch'
+    coils_between_cleaning: 'BatchesBetweenCleaning'
+    time_for_cleaning: 'time_for_cleaning'
+    duration:
+      warmup: 'DurationWarmUp'
+      cooldown: 'DurationCoolDown'
+    energyConsumption: {idle: 'EnergyConsumptionIdle', operating: 'EnergyConsumptionOperating', warmUp: 'EnergyConsumptionWarmingUp', coolDown: 'EnergyConsumptionCoolingDown'}
+  maintenance_name:
+    sheet_name: 'Maintenance'
+    machine: 'Machine'
+    task: 'Maintenance'
+    shutdown: 'Shutdown_Required'
+    duration: 'Duration'
+    scenarios: {Pessimistic: "MaxOperatingTime_Pessimistic", Average: 'MaxOperatingTime_Mean', Optimistic: 'MaxOperatingTime_Optimistic'}
+    scenarios_prob: {Pessimistic: 0.25, Average: 0.5, Optimistic: 0.25}
+    #scenarios_prob: {Pessimistic: 1}
+    upper_limit: 'MaxOperatingTime_Pessimistic'
+  scheduling_cost:
+    sheetName: 'SchedulingCost'
+    category: 'Category'
+    category_name: {maintenance: 'Maintenance', repair: 'Repair'}
+    stage: 'Stage'
+    cost: 'Cost'
+    re_cost: 'Rescheduling'
+  scheduling_parameters:
+    sheetName: 'schedulingParameters'
+    shutDown: 'ShutdownToBeConsidered'
+  parameters:
+    sheetName: 'Parameter'
+
+  process: 'process_parameters'
+  maintenance: 'maintenance'
+  scheduling: 'scheduling'
+  rescheduling: 'rescheduling'
+  generalPar: 'general_parameters'
+  schedulingPar: 'scheduling_parameters'
+
+
+
+
+machine_number_key: 'Machine_Number'
+machine_name: "_machine_"
+
+process_layout:
+  stages: ['Mixing','Coating&Drying', 'Calandering','Slitting','AddDrying']
+
+model_discrete:
+  set:
+    time_slots:
+      horizon_in_days: 14
+      shifts_per_day: 3
+      hours_per_shift: 8
+      blocks: 20
+    limit_shutdown: 6
+
+  decision_variables:
+    job_machine_assignment: "job_machine_assignment"
+    job_machine_slot_assignment: "job_machine_slot_assignemtn"
+    begin_job_stage: "begin_job_stage"
+    end_job_stage: "end_job_stage"
+    job_machine_slot_operation: 'job_machine_slot_operation'
+    warm_up: "warm_up"
+    cool_down: "cool_down"
+    scheduled_maint: 'scheduling_maintenance'
+    scheduled_repair: 'scheduling_repair'
+
+  constraints:
+    job_to_stage: "job on stage"
+    job_machine_to_slot: "job_machine_to_slot"
+    jobs_per_batch: "jobs_per_batch"
+    subsequent_jobs_on_machine: "subsequent_jobs_on_machine"
+    assignment_operation_time: "assginment_operation_time"
+    operation_time_subsequently: "operation_time_subsequently"
+    set_completion_time: 'Sets Completion Time'
+
+  parameters:
+    jobs: 50 # use 50 for two weeks, 75 for three weeks, ...
+    add_slots: 3
+
+
+production_schedule:
+  job_id_name: 'job_id'
+  time_name: '_start_time'
+  excel:
+    path: './Data/Jobs_Scheduled.xlsx'
+    sheet_name: 'Anode'
+
